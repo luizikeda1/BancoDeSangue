@@ -1,0 +1,25 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:th="http://www.thymeleaf.org">
+
+<head th:replace="~{fragments/imports/header_imports.html :: header_imports}">
+    <!-- Cabeçalhos -->
+</head>
+
+<body class="hold-transition sidebar-mini layout-fixed">
+<div class="wrapper">
+    <header th:replace="~{fragments/header.html :: header}"></header>
+
+    <aside th:replace="~{fragments/main-sidebar.html :: main-sidebar}"></aside>
+
+    <div class="content-wrapper">
+        <!-- Conteúdo da página -->
+    </div>
+
+    <aside th:replace="~{fragments/control-sidebar.html :: control-sidebar}"></aside>
+</div>
+
+<script th:replace="~{fragments/imports/script_imports.html :: script}"></script>
+</body>
+
+</html>
