@@ -22,7 +22,7 @@ public class BancoSangue {
     private String rg;
 
     @Column(name = "data_nasc")
-    private String dataNasc;//mantive as datas como string, pois no json ela esta com a barra invertida, mas poderia ser como Date tbm, ou LocalDate... poderia fazer a conversão na hora de salvar na entidade.
+    private String dataNasc;
 
     private String sexo;
     private String mae;
