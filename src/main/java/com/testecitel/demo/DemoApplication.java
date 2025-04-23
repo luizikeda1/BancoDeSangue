@@ -21,12 +21,5 @@ public class DemoApplication implements CommandLineRunner {
     }
 
     @Override
-    public void run(String... args) throws Exception {
-        if (bancoSangueDAO.count() == 0) {
-            bancoSangueService.importarDadosJson();
-            System.out.println("Dados importados com sucesso.");
-        } else {
-            System.out.println("Tabela BancoSangue já contém dados. Importação não realizada.");
-        }
-    }
+    public void run(String... args) throws Exception {}
 }
