@@ -1,0 +1,222 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:th="http://www.thymeleaf.org">
+
+<head th:replace="~{fragments/imports/header_imports.html :: header_imports}">
+    <!-- Cabeçalhos -->
+</head>
+
+<body class="hold-transition sidebar-mini layout-fixed">
+<div class="wrapper">
+    <header th:replace="~{fragments/header.html :: header}"></header>
+
+    <aside th:replace="~{fragments/main-sidebar.html :: main-sidebar}"></aside>
+
+    <div class="content-wrapper">
+        <section class='content-header'>
+            <h1>Estatísticas do Banco de Sangue
+                <small> | Dashboard</small>
+            </h1>
+        </section>
+
+        <section class='content'>
+            <div class="row">
+                <div class="col-lg-3 col-6">
+                    <div class="small-box bg-info">
+                        <div class="inner">
+                            <h3 id="totalCandidatos">0</h3>
+                            <p>Total de Candidatos</p>
+                        </div>
+                        <div class="icon">
+                            <i class="fas fa-users"></i>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="col-lg-3 col-6">
+                    <div class="small-box bg-success">
+                        <div class="inner">
+                            <h3 id="totalDoadores">0</h3>
+                            <p>Possíveis Doadores</p>
+                        </div>
+                        <div class="icon">
+                            <i class="fas fa-heart"></i>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="col-lg-3 col-6">
+                    <div class="small-box bg-warning">
+                        <div class="inner">
+                            <h3 id="mediaIdade">0</h3>
+                            <p>Média de Idade</p>
+                        </div>
+                        <div class="icon">
+                            <i class="fas fa-calendar-alt"></i>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="col-lg-3 col-6">
+                    <div class="small-box bg-danger">
+                        <div class="inner">
+                            <h3 id="mediaImc">0</h3>
+                            <p>IMC Médio</p>
+                        </div>
+                        <div class="icon">
+                            <i class="fas fa-weight"></i>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="row">
+                <div class="col-md-6">
+                    <div class="card">
+                        <div class="card-header">
+                            <h3 class="card-title">Candidatos por Estado</h3>
+                        </div>
+                        <div class="card-body">
+                            <canvas id="candidatosPorEstadoChart" style="min-height: 250px; height: 250px; max-height: 250px; max-width: 100%;"></canvas>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="col-md-6">
+                    <div class="card">
+                        <div class="card-header">
+                            <h3 class="card-title">IMC Médio por Faixa Etária</h3>
+                        </div>
+                        <div class="card-body">
+                            <canvas id="imcPorFaixaEtariaChart" style="min-height: 250px; height: 250px; max-height: 250px; max-width: 100%;"></canvas>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="row">
+                <div class="col-md-6">
+                    <div class="card">
+                        <div class="card-header">
+                            <h3 class="card-title">Percentual de Obesos por Sexo</h3>
+                        </div>
+                        <div class="card-body">
+                            <canvas id="obesosPorSexoChart" style="min-height: 250px; height: 250px; max-height: 250px; max-width: 100%;"></canvas>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="col-md-6">
+                    <div class="card">
+                        <div class="card-header">
+                            <h3 class="card-title">Média de Idade por Tipo Sanguíneo</h3>
+                        </div>
+                        <div class="card-body">
+                            <canvas id="idadePorTipoSanguineoChart" style="min-height: 250px; height: 250px; max-height: 250px; max-width: 100%;"></canvas>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="row">
+                <div class="col-md-12">
+                    <div class="card">
+                        <div class="card-header">
+                            <h3 class="card-title">Compatibilidade Sanguínea e Possíveis Doadores</h3>
+                        </div>
+                        <div class="card-body">
+                            <div class="table-responsive">
+                                <table class="table table-bordered table-striped">
+                                    <thead>
+                                    <tr>
+                                        <th>Tipo sanguíneo</th>
+                                        <th>Pode doar para</th>
+                                        <th>Pode receber de</th>
+                                        <th>Quantidade de possíveis doadores</th>
+                                    </tr>
+                                    </thead>
+                                    <tbody>
+                                    <tr>
+                                        <td>A+</td>
+                                        <td>A+ e AB+</td>
+                                        <td>A+, A-, O+ e O-</td>
+                                        <td id="doadoresA+">0</td>
+                                    </tr>
+                                    <tr>
+                                        <td>A-</td>
+                                        <td>A+, A-, AB+ e AB-</td>
+                                        <td>A- e O-</td>
+                                        <td id="doadoresA-">0</td>
+                                    </tr>
+                                    <tr>
+                                        <td>B+</td>
+                                        <td>B+ e AB+</td>
+                                        <td>B+, B-, O+ e O-</td>
+                                        <td id="doadoresB+">0</td>
+                                    </tr>
+                                    <tr>
+                                        <td>B-</td>
+                                        <td>B+, B-, AB+ e AB-</td>
+                                        <td>B- e O-</td>
+                                        <td id="doadoresB-">0</td>
+                                    </tr>
+                                    <tr>
+                                        <td>AB+</td>
+                                        <td>AB+</td>
+                                        <td>A+, B+, O+, AB+, A-, B-, O- e AB-</td>
+                                        <td id="doadoresAB+">0</td>
+                                    </tr>
+                                    <tr>
+                                        <td>AB-</td>
+                                        <td>AB+ e AB-</td>
+                                        <td>A-, B-, O- e AB-</td>
+                                        <td id="doadoresAB-">0</td>
+                                    </tr>
+                                    <tr>
+                                        <td>O+</td>
+                                        <td>A+, B+, O+ e AB+</td>
+                                        <td>O+ e O-</td>
+                                        <td id="doadoresO+">0</td>
+                                    </tr>
+                                    <tr>
+                                        <td>O-</td>
+                                        <td>A+, B+, O+, AB+, A-, B-, O- e AB-</td>
+                                        <td>O-</td>
+                                        <td id="doadoresO-">0</td>
+                                    </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                            <div class="alert alert-info mt-3">
+                                <i class="fas fa-info-circle"></i>A base é que somente pessoas com idade de 16 a 69 anos e com peso acima de 50 Kg podem doar sangue.
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="row">
+                <div class="col-md-12">
+                    <div class="card">
+                        <div class="card-body text-center">
+                            <button class="btn btn-primary btn-lg" id="btnNovosDados">
+                                <i class="fas fa-file-upload"></i> Importar Novos Dados
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+        <div id="modalArea">
+            <<div th:replace="~{banco/modal/modalUploadJson.html :: modalUploadJson}"></div>
+        </div>
+    </div>
+
+    <aside th:replace="~{fragments/control-sidebar.html :: control-sidebar}"></aside>
+</div>
+
+<script th:replace="~{fragments/imports/script_imports.html :: script}"></script>
+<script th:src='@{/frontjs/banco/list_banco.js}'></script>
+</body>
+
+</html>
