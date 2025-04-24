@@ -160,8 +160,8 @@ function preencherModalEdicao(dados) {
     $('#editNome').val(dados.nome);
     $('#editCpf').val(dados.cpf);
     $('#editRg').val(dados.rg);
-    $('#editDataNasc').val(dados.dataNasc);
-    $('#editSexo').val(dados.sexo);
+    $('#editDataNasc').val(formatarDataParaInput(dados.dataNasc));
+    $('#editSexo').val(mapearSexoParaSigla(dados.sexo));
     $('#editMae').val(dados.mae);
     $('#editPai').val(dados.pai);
     $('#editEmail').val(dados.email);
@@ -176,6 +176,18 @@ function preencherModalEdicao(dados) {
     $('#editAltura').val(dados.altura);
     $('#editPeso').val(dados.peso);
     $('#editTipoSanguineo').val(dados.tipoSanguineo);
+}
+
+function formatarDataParaInput(dataBR) {
+    if (!dataBR || dataBR.length !== 10) return '';
+    const partes = dataBR.split('/');
+    return `${partes[2]}-${partes[1]}-${partes[0]}`;
+}
+
+function mapearSexoParaSigla(sexo) {
+    if (sexo === "Masculino") return "M";
+    if (sexo === "Feminino") return "F";
+    return "";
 }
 
 function salvarEdicaoDoador() {
