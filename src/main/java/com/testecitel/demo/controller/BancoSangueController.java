@@ -1,6 +1,7 @@
 package com.testecitel.demo.controller;
 
 import com.testecitel.demo.model.BancoSangue;
+import com.testecitel.demo.repository.BancoSangueDAO;
 import com.testecitel.demo.service.BancoSangueService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -22,6 +23,8 @@ public class BancoSangueController {
 
     @Autowired
     BancoSangueService bancoSangueService;
+    @Autowired
+    private BancoSangueDAO bancoSangueDAO;
 
     @RequestMapping
     public ModelAndView Lista() {
@@ -29,10 +32,32 @@ public class BancoSangueController {
         return mv;
     }
 
-    @GetMapping("/estatisticas")
-    public ModelAndView Estatisticas() {
-        ModelAndView mv = new ModelAndView("banco/estatisticas_banco_sangue");
-        return mv;
+    @PostMapping("/atualizar")
+    public ResponseEntity<?> atualizarDoador(@RequestBody BancoSangue doador) {
+        try {
+            if (!bancoSangueDAO.existsById(doador.getId())) {
+                return ResponseEntity.badRequest().body("Doador não encontrado");
+            }
+
+            BancoSangue doadorAtualizado = bancoSangueDAO.save(doador);
+            return ResponseEntity.ok(doadorAtualizado);
+        } catch (Exception e) {
+            return ResponseEntity.badRequest().body("Erro ao atualizar doador: " + e.getMessage());
+        }
+    }
+
+    @DeleteMapping("/excluir/{id}")
+    public ResponseEntity<?> excluirDoador(@PathVariable Long id) {
+        try {
+            if (!bancoSangueDAO.existsById(id)) {
+                return ResponseEntity.badRequest().body("Doador não encontrado");
+            }
+
+            bancoSangueDAO.deleteById(id);
+            return ResponseEntity.ok("Doador excluído com sucesso");
+        } catch (Exception e) {
+            return ResponseEntity.badRequest().body("Erro ao excluir doador: " + e.getMessage());
+        }
     }
 
     /**
@@ -87,12 +112,30 @@ public class BancoSangueController {
                 return ResponseEntity.badRequest().body(response);
             }
 
-            // Manda a lista do Json para o service fazer a validação e salvar na tabela
-            List<BancoSangue> dadosImportados = bancoSangueService.processarArquivoJson(file);
+            // Processa o arquivo JSON e verifica duplicidades
+            Map<String, Object> resultado = bancoSangueService.processarArquivoJson(file);
+
+            int registrosImportados = (int) resultado.get("registrosImportados");
+            int registrosIgnorados = (int) resultado.get("registrosIgnorados");
+            List<String> cpfsDuplicados = (List<String>) resultado.get("cpfsDuplicados");
 
             response.put("success", true);
-            response.put("message", "Arquivo processado com sucesso. " + dadosImportados.size() + " registros importados.");
-            response.put("totalRegistros", dadosImportados.size());
+            response.put("message", "Arquivo processado com sucesso. " + registrosImportados + " registros importados.");
+            response.put("totalRegistros", registrosImportados);
+
+            // Adiciona informações sobre registros duplicados
+            if (registrosIgnorados > 0) {
+                response.put("registrosIgnorados", registrosIgnorados);
+                response.put("mensagemDuplicados", registrosIgnorados + " registros foram ignorados por já existirem na base de dados.");
+
+                // Limita a quantidade de CPFs exibidos na mensagem para não sobrecarregar a resposta
+                if (cpfsDuplicados.size() <= 10) {
+                    response.put("cpfsDuplicados", cpfsDuplicados);
+                } else {
+                    response.put("cpfsDuplicados", cpfsDuplicados.subList(0, 10));
+                    response.put("mensagemCpfs", "Exibindo os primeiros 10 CPFs duplicados de um total de " + cpfsDuplicados.size());
+                }
+            }
 
             return ResponseEntity.ok(response);
 

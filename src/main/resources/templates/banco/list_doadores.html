@@ -1,0 +1,141 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:th="http://www.thymeleaf.org">
+
+<head th:replace="~{fragments/imports/header_imports.html :: header_imports}">
+</head>
+
+<body class="hold-transition sidebar-mini layout-fixed">
+<div class="wrapper">
+  <header th:replace="~{fragments/header.html :: header}"></header>
+
+  <aside th:replace="~{fragments/main-sidebar.html :: main-sidebar}"></aside>
+
+  <div class="content-wrapper">
+    <section class='content-header'>
+      <h1>Listar Doadores
+        <small> | Consulta</small>
+      </h1>
+    </section>
+    <section class='content'>
+      <div class='card'>
+        <div class="card-body">
+
+            <div class="row">
+              <div class='col-md-3'>
+                <div class="form-group">
+                  <label for="Nome">Nome</label>
+                  <input class="form-control" type="text" id="nome">
+                </div>
+              </div>
+
+              <div class='col-md-3'>
+                <div class="form-group">
+                  <label for="cpf">CPF</label>
+                  <input class="form-control" type="text" id="cpf" name="cpf">
+                </div>
+              </div>
+
+              <div class="col-md-3">
+                <div class="form-group">
+                  <label for="sexo">Sexo</label>
+                  <select class="form-control" id="sexo">
+                    <option value="x">Todos</option>
+                    <option value="Masculino">Masculino</option>
+                    <option value="Feminino">Feminino</option>
+                  </select>
+                </div>
+              </div>
+
+              <div class="col-md-3">
+                <div class="form-group">
+                  <label for="tipoSanguineo">Tipo Sanguíneo</label>
+                  <select class="form-control" id="tipoSanguineo">
+                    <option value="x">Todos</option>
+                    <option value="A+">A+</option>
+                    <option value="A-">A-</option>
+                    <option value="B+">B+</option>
+                    <option value="B-">B-</option>
+                    <option value="AB+">AB+</option>
+                    <option value="AB-">AB-</option>
+                    <option value="O+">O+</option>
+                    <option value="O-">O-</option>
+                  </select>
+                </div>
+              </div>
+
+              <div class="col-md-3">
+                <div class="form-group">
+                  <label for="estado">Estado</label>
+                  <select class="form-control" id="estado">
+                    <option value="x">Todos</option>
+                    <option value="AC">AC</option>
+                    <option value="AL">AL</option>
+                    <option value="AP">AP</option>
+                    <option value="AM">AM</option>
+                    <option value="BA">BA</option>
+                    <option value="CE">CE</option>
+                    <option value="DF">DF</option>
+                    <option value="ES">ES</option>
+                    <option value="GO">GO</option>
+                    <option value="MA">MA</option>
+                    <option value="MT">MT</option>
+                    <option value="MS">MS</option>
+                    <option value="MG">MG</option>
+                    <option value="PA">PA</option>
+                    <option value="PB">PB</option>
+                    <option value="PR">PR</option>
+                    <option value="PE">PE</option>
+                    <option value="PI">PI</option>
+                    <option value="RJ">RJ</option>
+                    <option value="RN">RN</option>
+                    <option value="RS">RS</option>
+                    <option value="RO">RO</option>
+                    <option value="RR">RR</option>
+                    <option value="SC">SC</option>
+                    <option value="SP">SP</option>
+                    <option value="SE">SE</option>
+                    <option value="TO">TO</option>
+                  </select>
+                </div>
+              </div>
+
+              <div class="col-md-9 d-flex justify-content-end align-items-end">
+                <div class="form-group mb-0">
+                  <button id="btnPesquisar" onclick="pesquisarDoador()" class="btn btn-primary mr-2">Pesquisar</button>
+                  <button id="btnLimparPesquisa" onclick="limparPesquisa()" class="btn btn-danger">Limpar</button>
+                </div>
+              </div>
+            </div>
+
+          <div class="table-responsive mt-3">
+            <table id="TblDoador" class="table table-bordered table-striped">
+              <thead>
+              <tr>
+                <th>Nome</th>
+                <th>Celular</th>
+                <th>Email</th>
+                <th>Cpf</th>
+                <th>Opções</th>
+              </tr>
+              </thead>
+              <tbody id="tblDoadorBody">
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+    </section>
+    <div id="modalArea">
+      <div th:replace="~{banco/modal/modalEditarDoador.html :: #modalEditarDoador}"></div>
+    </div>
+  </div>
+
+  <aside th:replace="~{fragments/control-sidebar.html :: control-sidebar}"></aside>
+</div>
+
+<script th:replace="~{fragments/imports/script_imports.html :: script}"></script>
+<script th:src='@{/frontjs/banco/list_doador.js}'></script>
+</body>
+
+</html>

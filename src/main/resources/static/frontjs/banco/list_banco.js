@@ -8,6 +8,7 @@ $(document).ready(function() {
     const fileUpload = document.getElementById('fileUpload');
 
     if (dropArea && fileUpload) {
+        console.log("Elementos de upload encontrados!");
         const dropText = document.getElementById('dropText');
         const fileInfo = document.getElementById('fileInfo');
         const fileName = document.getElementById('fileName');
@@ -102,6 +103,7 @@ $(document).ready(function() {
             const formData = new FormData();
             formData.append('file', file);
 
+            // Mostrar barra de progresso
             const progressBar = document.querySelector('.progress');
             const progressBarInner = progressBar.querySelector('.progress-bar');
             progressBar.style.display = 'block';
@@ -131,13 +133,51 @@ $(document).ready(function() {
                         resetUpload();
                         progressBar.style.display = 'none';
 
+                        let mensagem = response.message;
+                        let htmlContent = '';
+
+                        // Se houver registros ignorados, adiciona informações sobre duplicidades
+                        if (response.registrosIgnorados && response.registrosIgnorados > 0) {
+                            htmlContent = `
+                                <div>
+                                    <p>${mensagem}</p>
+                                    <p>${response.mensagemDuplicados}</p>
+                                `;
+
+                            // Se houver CPFs duplicados para exibir
+                            if (response.cpfsDuplicados && response.cpfsDuplicados.length > 0) {
+                                htmlContent += `
+                                    <div class="mt-3">
+                                        <p><strong>CPFs duplicados:</strong></p>
+                                        <ul class="text-left">
+                                `;
+
+                                response.cpfsDuplicados.forEach(cpf => {
+                                    htmlContent += `<li>${formatarCPF(cpf)}</li>`;
+                                });
+
+                                htmlContent += `
+                                        </ul>
+                                `;
+
+                                if (response.mensagemCpfs) {
+                                    htmlContent += `<p class="text-muted">${response.mensagemCpfs}</p>`;
+                                }
+
+                                htmlContent += `
+                                    </div>
+                                `;
+                            }
+
+                            htmlContent += `</div>`;
+                        }
+
                         Swal.fire({
                             icon: 'success',
-                            title: 'Sucesso!',
-                            text: 'Dados importados com sucesso!',
+                            title: 'Importação Concluída',
+                            html: htmlContent || mensagem,
                             confirmButtonColor: '#28a745'
                         }).then(() => {
-
                             window.location.reload();
                         });
                     }, 1000);
@@ -153,10 +193,17 @@ $(document).ready(function() {
                 }
             });
         }
+
+        function formatarCPF(cpf) {
+            cpf = cpf.replace(/\D/g, '');
+            if (cpf.length !== 11) {
+                return cpf;
+            }
+            return cpf.replace(/(\d{3})(\d{3})(\d{3})(\d{2})/, "$1.$2.$3-$4");
+        }
     } else {
         console.error("Elementos de upload não encontrados!");
     }
-
     carregarDadosBancoSangue();
 
     function carregarDadosBancoSangue() {

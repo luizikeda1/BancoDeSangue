@@ -46,22 +46,32 @@ public class BancoSangueService {
     /**
      * Processa o arquivo JSON enviado pelo usuário
      * @param file Arquivo JSON enviado
-     * @return Lista de objetos BancoSangue processados e salvos
+     * @return Resultado do processamento contendo registros importados e ignorados
      * @throws IOException Em caso de erro na leitura do arquivo
      */
-    public List<BancoSangue> processarArquivoJson(MultipartFile file) throws IOException {
+    public Map<String, Object> processarArquivoJson(MultipartFile file) throws IOException {
         ObjectMapper mapper = new ObjectMapper();
         InputStream inputStream = file.getInputStream();
 
         List<Map<String, Object>> dadosJson = mapper.readValue(inputStream, new TypeReference<List<Map<String, Object>>>() {});
 
         List<BancoSangue> dadosProcessados = new ArrayList<>();
+        List<String> cpfsDuplicados = new ArrayList<>();
 
         for (Map<String, Object> item : dadosJson) {
+            String cpf = (String) item.get("cpf");
+
+            // Verifica se o CPF já existe no banco de dados
+            if (cpf != null && !cpf.isEmpty() && bancoSangueDAO.existsByCpf(cpf)) {
+                // CPF já existe, adiciona à lista de duplicados
+                cpfsDuplicados.add(cpf);
+                continue; // Pula para o próximo item
+            }
+
             BancoSangue bancoSangue = new BancoSangue();
 
             bancoSangue.setNome((String) item.get("nome"));
-            bancoSangue.setCpf((String) item.get("cpf"));
+            bancoSangue.setCpf(cpf);
             bancoSangue.setRg((String) item.get("rg"));
 
             String dataNasc = (String) item.get("data_nasc");
@@ -130,9 +140,18 @@ public class BancoSangueService {
             dadosProcessados.add(bancoSangue);
         }
 
-        bancoSangueDAO.saveAll(dadosProcessados);
+        // Salva apenas os registros não duplicados
+        if (!dadosProcessados.isEmpty()) {
+            bancoSangueDAO.saveAll(dadosProcessados);
+        }
 
-        return dadosProcessados;
+        // Prepara o resultado do processamento
+        Map<String, Object> resultado = new HashMap<>();
+        resultado.put("registrosImportados", dadosProcessados.size());
+        resultado.put("registrosIgnorados", cpfsDuplicados.size());
+        resultado.put("cpfsDuplicados", cpfsDuplicados);
+
+        return resultado;
     }
 
     /**
