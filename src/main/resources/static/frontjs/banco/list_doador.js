@@ -54,7 +54,6 @@ function pesquisarDoador() {
                 data: 'telefone',
                 className: 'text-center',
                 render: function(data) {
-                    // Formata o telefone para exibição
                     if (data) {
                         return formatarTelefone(data);
                     }
