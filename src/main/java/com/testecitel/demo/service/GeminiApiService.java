@@ -13,32 +13,44 @@ public class GeminiApiService {
     private String apiKey;
 
     private static final String ENDPOINT =
-            "https://generativelanguage.googleapis.com/v1/models/gemini-1.5-pro:generateContent";
+            "https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-pro:generateContent";
 
     public String gerarResposta(String prompt) {
         try {
             OkHttpClient client = new OkHttpClient();
 
             String json = """
-                {
-                  "contents": [ {
-                    "parts": [ {
-                      "text": "%s"
-                    } ]
-                  } ]
-                }
-            """.formatted(prompt);
+                    {
+                      "contents": [
+                        {
+                          "role": "user",
+                          "parts": [
+                            {
+                              "text": "%s"
+                            }
+                          ]
+                        }
+                      ]
+                    }
+                    """.formatted(prompt);
 
             RequestBody body = RequestBody.create(json, MediaType.get("application/json"));
+
+            HttpUrl url = HttpUrl.parse(ENDPOINT)
+                    .newBuilder()
+                    .addQueryParameter("key", apiKey)
+                    .build();
+
             Request request = new Request.Builder()
-                    .url(ENDPOINT)
-                    .addHeader("x-goog-api-key", apiKey)
+                    .url(url)
                     .post(body)
+                    .addHeader("Content-Type", "application/json")
                     .build();
 
             try (Response response = client.newCall(request).execute()) {
                 if (!response.isSuccessful()) {
-                    return "Erro da API: " + response.code();
+                    String errorBody = response.body() != null ? response.body().string() : "Sem corpo de resposta";
+                    return "Erro da API: " + response.code() + " - " + errorBody;
                 }
 
                 String bodyStr = response.body().string();
