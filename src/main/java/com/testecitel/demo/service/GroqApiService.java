@@ -7,13 +7,12 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
 @Service
-public class GeminiApiService {
+public class GroqApiService {
 
-    @Value("${gemini.api.key}")
+    @Value("${groq.api.key}")
     private String apiKey;
 
-    private static final String ENDPOINT =
-            "https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-pro:generateContent";
+    private static final String ENDPOINT = "https://api.groq.com/openai/v1/chat/completions";
 
     public String gerarResposta(String prompt) {
         try {
@@ -21,42 +20,31 @@ public class GeminiApiService {
 
             String json = """
                     {
-                      "contents": [
-                        {
-                          "role": "user",
-                          "parts": [
-                            {
-                              "text": "%s"
-                            }
-                          ]
-                        }
+                      "model": "llama3-70b-8192",
+                      "messages": [
+                        { "role": "user", "content": "%s" }
                       ]
                     }
                     """.formatted(prompt);
 
+
             RequestBody body = RequestBody.create(json, MediaType.get("application/json"));
-
-            HttpUrl url = HttpUrl.parse(ENDPOINT)
-                    .newBuilder()
-                    .addQueryParameter("key", apiKey)
-                    .build();
-
             Request request = new Request.Builder()
-                    .url(url)
+                    .url(ENDPOINT)
+                    .addHeader("Authorization", "Bearer " + apiKey)
                     .post(body)
-                    .addHeader("Content-Type", "application/json")
                     .build();
 
             try (Response response = client.newCall(request).execute()) {
                 if (!response.isSuccessful()) {
-                    String errorBody = response.body() != null ? response.body().string() : "Sem corpo de resposta";
+                    String errorBody = response.body().string();
                     return "Erro da API: " + response.code() + " - " + errorBody;
                 }
 
                 String bodyStr = response.body().string();
                 ObjectMapper mapper = new ObjectMapper();
                 JsonNode jsonNode = mapper.readTree(bodyStr);
-                return jsonNode.path("candidates").get(0).path("content").path("parts").get(0).path("text").asText();
+                return jsonNode.path("choices").get(0).path("message").path("content").asText();
             }
 
         } catch (Exception e) {

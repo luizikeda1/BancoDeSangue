@@ -2,7 +2,7 @@
 <html xmlns:th="http://www.thymeleaf.org">
 <head>
     <meta charset="UTF-8">
-    <title>Chat com o Gemini</title>
+    <title>Chat com o IA</title>
     <style>
         body { font-family: Arial, sans-serif; padding:20px; }
         #chat { border:1px solid #ccc; height:300px; padding:10px; overflow:auto; }
@@ -11,7 +11,7 @@
     </style>
 </head>
 <body>
-<h1>Chat com o Gemini</h1>
+<h1>Chat com o IA</h1>
 <div id="chat"></div>
 <textarea id="prompt" rows="3" cols="60"></textarea><br/>
 <button id="send">Enviar</button>
@@ -27,13 +27,13 @@
         appendToChat('Você: ' + text, 'user');
         promptEl.value = '';
 
-        fetch('/api/gemini/chat', {
+        fetch('/api/chat', {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify({ prompt: text })
         })
             .then(r => r.text())
-            .then(res => appendToChat('Gemini: ' + res, 'ai'))
+            .then(res => appendToChat('IA: ' + res, 'ai'))
             .catch(err => appendToChat('Erro: ' + err, 'ai'));
     });
 
