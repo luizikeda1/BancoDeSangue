@@ -3,14 +3,17 @@ package com.testecitel.demo.service;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import okhttp3.*;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
 @Service
 public class GeminiApiService {
 
-    private static final String API_KEY = "AIzaSyBewwPjgDvqnMRIRIhYH4nTtB8-b6ZMYqk";
+    @Value("${gemini.api.key}")
+    private String apiKey;
+
     private static final String ENDPOINT =
-            "https://generativelanguage.googleapis.com/v1beta/models/gemini-pro:generateContent?key=" + API_KEY;
+            "https://generativelanguage.googleapis.com/v1/models/gemini-1.5-pro:generateContent";
 
     public String gerarResposta(String prompt) {
         try {
@@ -18,16 +21,20 @@ public class GeminiApiService {
 
             String json = """
                 {
-                  "contents": [{
-                    "parts": [{
+                  "contents": [ {
+                    "parts": [ {
                       "text": "%s"
-                    }]
-                  }]
+                    } ]
+                  } ]
                 }
             """.formatted(prompt);
 
             RequestBody body = RequestBody.create(json, MediaType.get("application/json"));
-            Request request = new Request.Builder().url(ENDPOINT).post(body).build();
+            Request request = new Request.Builder()
+                    .url(ENDPOINT)
+                    .addHeader("x-goog-api-key", apiKey)
+                    .post(body)
+                    .build();
 
             try (Response response = client.newCall(request).execute()) {
                 if (!response.isSuccessful()) {
